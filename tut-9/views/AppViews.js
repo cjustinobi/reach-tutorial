@@ -1,80 +1,77 @@
 import React from 'react';
-import PlayerViews from './PlayerViews';
 
-const exports = {...PlayerViews};
+const exports = {};
 
 exports.Wrapper = class extends React.Component {
   render() {
     const {content} = this.props;
     return (
-      <div className="Attacher">
-        <h2>Attacher (Bob)</h2>
-        {content}
+      <div className="App">
+        <header className="App-header" id="root">
+          <h1>Rock, Paper, Scissors</h1>
+          {content}
+        </header>
       </div>
     );
   }
 }
 
-exports.Attach = class extends React.Component {
+exports.ConnectAccount = class extends React.Component {
+  render() {
+    return (
+      <div>
+        Please wait while we connect to your account.
+        If this takes more than a few seconds, there may be something wrong.
+      </div>
+    )
+  }
+}
+
+exports.FundAccount = class extends React.Component {
+  render() {
+    const {bal, standardUnit, defaultFundAmt, parent} = this.props;
+    const amt = (this.state || {}).amt || defaultFundAmt;
+    return (
+      <div>
+        <h2>Fund account</h2>
+        <br />
+        Balance: {bal} {standardUnit}
+        <hr />
+        Would you like to fund your account with additional {standardUnit}?
+        <br />
+        (This only works on certain devnets)
+        <br />
+        <input
+          type='number'
+          placeholder={defaultFundAmt}
+          onChange={(e) => this.setState({amt: e.currentTarget.value})}
+        />
+        <button onClick={() => parent.fundAccount(amt)}>Fund Account</button>
+        <button onClick={() => parent.skipFundAccount()}>Skip</button>
+      </div>
+    );
+  }
+}
+
+exports.DeployerOrAttacher = class extends React.Component {
   render() {
     const {parent} = this.props;
-    const {ctcInfoStr} = this.state || {};
     return (
       <div>
-        Please paste the contract info to attach to:
+        Please select a role:
         <br />
-        <textarea spellcheck="false"
-          className='ContractInfo'
-          onChange={(e) => this.setState({ctcInfoStr: e.currentTarget.value})}
-          placeholder='{}'
-        />
-        <br />
-        <button
-          disabled={!ctcInfoStr}
-          onClick={() => parent.attach(ctcInfoStr)}
-        >Attach</button>
-      </div>
-    );
-  }
-}
-
-exports.Attaching = class extends React.Component {
-  render() {
-    return (
-      <div>
-        Attaching, please wait...
-      </div>
-    );
-  }
-}
-
-exports.AcceptTerms = class extends React.Component {
-  render() {
-    const {wager, standardUnit, parent} = this.props;
-    const {disabled} = this.state || {};
-    return (
-      <div>
-        The terms of the game are:
-        <br /> Wager: {wager} {standardUnit}
-        <br />
-        <button
-          disabled={disabled}
-          onClick={() => {
-            this.setState({disabled: true});
-            parent.termsAccepted();
-          }}
-        >Accept terms and pay wager</button>
-      </div>
-    );
-  }
-}
-
-exports.WaitingForTurn = class extends React.Component {
-  render() {
-    return (
-      <div>
-        Waiting for the other player...
-        <br />Think about which move you want to play.
+        <p>
+          <button
+            onClick={() => parent.selectDeployer()}
+          >Deployer</button>
+          <br /> Set the wager, deploy the contract.
+        </p>
+        <p>
+          <button
+            onClick={() => parent.selectAttacher()}
+          >Attacher</button>
+          <br /> Attach to the Deployer's contract.
+        </p>
       </div>
     );
   }
